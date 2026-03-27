@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Hoopit">
-  <title>Hoopit</title>
+  <meta name="apple-mobile-web-app-title" content="Treninger">
+  <title>Treninger</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -23,16 +23,10 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 24px;
+      margin-bottom: 28px;
     }
 
-    h1 {
-      font-size: 28px;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-    }
-
-    h1 span { color: #4ade80; }
+    h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.5px; }
 
     #refresh-btn {
       background: #1e1e28;
@@ -46,29 +40,68 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: background 0.2s;
     }
     #refresh-btn:active { background: #2a2a38; }
+
+    .section { margin-bottom: 28px; }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #888;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .dot-hoopit { background: #4ade80; }
+    .dot-spond  { background: #60a5fa; }
 
     .card {
       background: #1a1a24;
       border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 14px;
-      border-left: 4px solid #4ade80;
+      padding: 18px;
+      margin-bottom: 10px;
     }
+    .card-hoopit { border-left: 4px solid #4ade80; }
+    .card-spond  { border-left: 4px solid #60a5fa; }
 
     .card-title {
-      font-size: 17px;
+      font-size: 16px;
       font-weight: 600;
       margin-bottom: 10px;
       line-height: 1.3;
     }
 
-    .card-meta {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
+    .badge {
+      display: inline-block;
+      background: #2a2a3a;
+      color: #999;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 20px;
+      margin-bottom: 8px;
+    }
+
+    .day-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
     }
 
     .meta-row {
@@ -76,89 +109,85 @@
       align-items: center;
       gap: 8px;
       font-size: 14px;
-      color: #aaa;
-    }
-
-    .meta-row .icon { font-size: 15px; width: 18px; text-align: center; }
-    .meta-row .value { color: #ddd; }
-
-    .badge {
-      display: inline-block;
-      background: #2a2a3a;
-      color: #aaa;
-      font-size: 12px;
-      padding: 2px 8px;
-      border-radius: 20px;
-      margin-bottom: 10px;
-    }
-
-    .day-label {
-      font-size: 13px;
-      font-weight: 600;
-      color: #4ade80;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 8px;
+      color: #bbb;
       margin-top: 4px;
     }
+    .meta-row .icon { font-size: 13px; width: 16px; text-align: center; }
 
     #status {
       text-align: center;
-      color: #555;
-      font-size: 13px;
-      margin-top: 28px;
+      color: #444;
+      font-size: 12px;
+      margin-top: 8px;
       padding-bottom: 8px;
     }
 
     .loading {
       text-align: center;
       color: #555;
-      padding: 60px 0;
-      font-size: 16px;
+      padding: 40px 0;
+      font-size: 15px;
     }
 
     .spinning { animation: spin 1s linear infinite; display: inline-block; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    .error-msg {
-      background: #2a1a1a;
-      border-left: 4px solid #f87171;
-      border-radius: 12px;
-      padding: 16px;
-      color: #f87171;
-      font-size: 14px;
-    }
+    .empty { color: #555; font-size: 14px; padding: 12px 0; }
   </style>
 </head>
 <body>
   <header>
-    <h1>⚽ <span>Hoopit</span></h1>
+    <h1>🏃 Treninger</h1>
     <button id="refresh-btn" onclick="load()" title="Oppdater">↻</button>
   </header>
 
-  <div id="content"><div class="loading"><span class="spinning">↻</span> Laster...</div></div>
-
+  <div id="content"><div class="loading"><span class="spinning">↻</span></div></div>
   <div id="status"></div>
 
   <script>
-    const SUPABASE_URL = "https://bpnjioorcjqvntxkpuia.supabase.co";
-    const ANON_KEY     = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwbmppb29yY2pxdm50eGtwdWlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMjMyODMsImV4cCI6MjA4OTY5OTI4M30.Wc3ZUXK1xIB_9_kCPyEesmCM7mjLLTOZYgAv2yqro04";
+    const SB_URL  = "https://bpnjioorcjqvntxkpuia.supabase.co";
+    const SB_KEY  = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwbmppb29yY2pxdm50eGtwdWlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMjMyODMsImV4cCI6MjA4OTY5OTI4M30.Wc3ZUXK1xIB_9_kCPyEesmCM7mjLLTOZYgAv2yqro04";
 
-    const DAY_NO = ["søndag","mandag","tirsdag","onsdag","torsdag","fredag","lørdag"];
-    const MON_NO = ["jan","feb","mar","apr","mai","jun","jul","aug","sep","okt","nov","des"];
+    const DAY = ["søn","man","tir","ons","tor","fre","lør"];
+    const MON = ["jan","feb","mar","apr","mai","jun","jul","aug","sep","okt","nov","des"];
 
-    function fmt(dtStr) {
-      if (!dtStr) return { date: "–", time: "" };
-      const d = new Date(dtStr);
-      const day  = DAY_NO[d.getDay()];
-      const date = `${day.charAt(0).toUpperCase() + day.slice(1)} ${d.getDate()}. ${MON_NO[d.getMonth()]}`;
-      const time = d.toLocaleTimeString("no", { hour: "2-digit", minute: "2-digit" });
-      return { date, time };
+    function fmtDate(ts) {
+      if (!ts) return "–";
+      const d = new Date(ts);
+      return `${DAY[d.getDay()]} ${d.getDate()}. ${MON[d.getMonth()]}`;
     }
 
-    function fmtTime(dtStr) {
-      if (!dtStr) return "";
-      return new Date(dtStr).toLocaleTimeString("no", { hour: "2-digit", minute: "2-digit" });
+    function fmtTime(ts) {
+      if (!ts) return "";
+      return new Date(ts).toLocaleTimeString("no", { hour: "2-digit", minute: "2-digit" });
+    }
+
+    function renderCards(events, cls) {
+      if (!events.length) return `<div class="empty">Ingen kommende</div>`;
+      return events.map(e => {
+        const date = fmtDate(e.datetime);
+        const t1   = fmtTime(e.datetime);
+        const t2   = fmtTime(e.end_time);
+        const time = t2 ? `${t1}–${t2}` : t1;
+        return `
+          <div class="day-label">${date}</div>
+          <div class="card ${cls}">
+            ${e.group_name ? `<div class="badge">${e.group_name}</div>` : ""}
+            <div class="card-title">${e.title}</div>
+            ${time     ? `<div class="meta-row"><span class="icon">🕐</span>${time}</div>` : ""}
+            ${e.location ? `<div class="meta-row"><span class="icon">📍</span>${e.location}</div>` : ""}
+          </div>`;
+      }).join("");
+    }
+
+    async function sbFetch(table) {
+      const now = new Date().toISOString();
+      const r = await fetch(
+        `${SB_URL}/rest/v1/${table}?datetime=gte.${now}&order=datetime.asc&limit=2`,
+        { headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` } }
+      );
+      if (!r.ok) throw new Error(`${table} HTTP ${r.status}`);
+      return r.json();
     }
 
     async function load() {
@@ -166,49 +195,38 @@
       btn.classList.add("spinning");
 
       try {
-        const now = new Date().toISOString();
-        const res = await fetch(
-          `${SUPABASE_URL}/rest/v1/hoopit_appointments?datetime=gte.${now}&order=datetime.asc&limit=2`,
-          { headers: { apikey: ANON_KEY, Authorization: `Bearer ${ANON_KEY}` } }
-        );
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const events = await res.json();
+        const [hoopit, spond] = await Promise.all([
+          sbFetch("hoopit_appointments"),
+          sbFetch("spond_appointments"),
+        ]);
 
-        const content = document.getElementById("content");
-        if (!events.length) {
-          content.innerHTML = '<div class="loading">Ingen kommende treninger 🎉</div>';
-        } else {
-          content.innerHTML = events.map(e => {
-            const { date, time } = fmt(e.datetime);
-            const endTime = fmtTime(e.end_time);
-            const timeStr = endTime ? `${time}–${endTime}` : time;
-            return `
-              <div class="day-label">${date}</div>
-              <div class="card">
-                ${e.group_name ? `<div class="badge">${e.group_name}</div>` : ""}
-                <div class="card-title">${e.title}</div>
-                <div class="card-meta">
-                  ${timeStr ? `<div class="meta-row"><span class="icon">🕐</span><span class="value">${timeStr}</span></div>` : ""}
-                  ${e.location ? `<div class="meta-row"><span class="icon">📍</span><span class="value">${e.location}</span></div>` : ""}
-                </div>
-              </div>`;
-          }).join("");
-        }
+        document.getElementById("content").innerHTML = `
+          <div class="section">
+            <div class="section-header">
+              <div class="dot dot-hoopit"></div>
+              <div class="section-title">Hoopit</div>
+            </div>
+            ${renderCards(hoopit, "card-hoopit")}
+          </div>
+          <div class="section">
+            <div class="section-header">
+              <div class="dot dot-spond"></div>
+              <div class="section-title">Spond</div>
+            </div>
+            ${renderCards(spond, "card-spond")}
+          </div>`;
 
-        const latest = await fetch(
-          `${SUPABASE_URL}/rest/v1/hoopit_appointments?order=updated_at.desc&limit=1`,
-          { headers: { apikey: ANON_KEY, Authorization: `Bearer ${ANON_KEY}` } }
-        );
-        const [last] = await latest.json();
-        if (last) {
-          const upd = new Date(last.updated_at).toLocaleString("no", {
+        // Last updated
+        const all = [...hoopit, ...spond].sort((a,b) => new Date(b.updated_at) - new Date(a.updated_at));
+        if (all[0]) {
+          const upd = new Date(all[0].updated_at).toLocaleString("no", {
             day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit"
           });
           document.getElementById("status").textContent = `Oppdatert ${upd}`;
         }
       } catch (err) {
         document.getElementById("content").innerHTML =
-          `<div class="error-msg">Kunne ikke laste data: ${err.message}</div>`;
+          `<div class="loading" style="color:#f87171">Feil: ${err.message}</div>`;
       } finally {
         btn.classList.remove("spinning");
       }
