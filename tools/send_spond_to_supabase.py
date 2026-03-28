@@ -17,7 +17,7 @@ import requests
 from dotenv import load_dotenv
 from spond import spond
 
-load_dotenv("/workspaces/TestAgentNate/.env")
+load_dotenv(os.path.join(os.path.dirname(os.path.dirname(__file__)), ".env"))
 
 SPOND_USERNAME       = os.getenv("SPOND_USERNAME")
 SPOND_PASSWORD       = os.getenv("SPOND_PASSWORD")
